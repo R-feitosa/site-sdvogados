@@ -40,47 +40,85 @@ const PracticeAreas = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
+  // The pinned card stack only exists on desktop; on mobile the section is a
+  // plain list, so there is no reason to run any scroll work at all.
+  const [isDesktop, setIsDesktop] = useState(false);
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      
+    const query = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setIsDesktop(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) {
+      setActiveCardIndex(0);
+      return;
+    }
+
+    let frame = 0;
+    let lastIndex = -1;
+
+    // Layout is read once per animation frame instead of once per scroll event,
+    // and state is only committed when the active card actually changes.
+    const measure = () => {
+      frame = 0;
       const section = sectionRef.current;
-      const rect = section.getBoundingClientRect();
-      const sectionTop = rect.top;
-      const sectionHeight = section.offsetHeight;
-      const viewportHeight = window.innerHeight;
-      
-      // Calculate scroll progress within the section
-      if (sectionTop <= 0 && sectionTop > -(sectionHeight - viewportHeight)) {
-        const scrollProgress = Math.abs(sectionTop) / (sectionHeight - viewportHeight);
-        const newIndex = Math.min(
-          Math.floor(scrollProgress * practiceAreas.length),
-          practiceAreas.length - 1
-        );
-        setActiveCardIndex(newIndex);
+      if (!section) return;
+
+      const { top } = section.getBoundingClientRect();
+      const scrollableHeight = section.offsetHeight - window.innerHeight;
+      if (scrollableHeight <= 0) return;
+
+      const progress = Math.min(Math.max(-top / scrollableHeight, 0), 1);
+      const nextIndex = Math.min(
+        Math.floor(progress * practiceAreas.length),
+        practiceAreas.length - 1,
+      );
+
+      if (nextIndex !== lastIndex) {
+        lastIndex = nextIndex;
+        setActiveCardIndex(nextIndex);
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [isDesktop]);
 
   return (
-    <section 
+    <section
       id="areas"
-      ref={sectionRef} 
+      ref={sectionRef}
       className="relative bg-white"
-      style={{ height: window.innerWidth >= 1024 ? `${100 + (practiceAreas.length * 25)}vh` : 'auto' }}
+      style={isDesktop ? { height: `${100 + practiceAreas.length * 25}vh` } : undefined}
     >
       {/* Sticky container - stays in viewport while scrolling */}
       <div className="lg:sticky lg:top-0 lg:h-screen px-2 md:px-4 py-2 md:py-4 overflow-hidden">
         <div className="relative h-full overflow-hidden rounded-2xl lg:rounded-3xl">
           {/* Background */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${servicesBg})` }}
+          <img
+            src={servicesBg}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/45 via-black/25 to-black/40" />
 
           {/* Content - Full height flex */}
           <div className="relative z-10 h-full flex flex-col lg:flex-row">
@@ -91,7 +129,7 @@ const PracticeAreas = () => {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.15 }}
               >
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-1.5 h-1.5 rounded-full bg-white/80" />
@@ -203,16 +241,7 @@ const PracticeAreas = () => {
                         height: 120
                       }}
                     >
-                      <div 
-                        className="w-full h-full p-6 rounded-2xl flex items-center"
-                        style={{
-                          background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
-                          backdropFilter: 'blur(20px)',
-                          WebkitBackdropFilter: 'blur(20px)',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-                        }}
-                      >
+                      <div className="surface-frost-strong flex h-full w-full items-center rounded-2xl p-6">
                         <div className="flex items-center gap-5 w-full">
                           <div 
                             className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -247,12 +276,7 @@ const PracticeAreas = () => {
               return (
                 <div
                   key={area.title}
-                  className="w-full p-4 rounded-xl"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
+                  className="surface-frost w-full rounded-xl p-4"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,255,255,0.1)' }}>

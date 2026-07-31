@@ -16,6 +16,12 @@
     --popover: 0 0% 12%;
     --popover-foreground: 0 0% 95%;
 
+    /* Brand Bordeaux (#800020) - used by the header, CTAs and accents */
+    --brand: 345 100% 25%;
+    --brand-light: 345 72% 34%;
+    --brand-dark: 345 100% 17%;
+    --brand-foreground: 0 0% 100%;
+
     /* Bordeaux Wine - Primary */
     --primary: 0 68% 20%;
     --primary-foreground: 0 0% 98%;
@@ -86,16 +92,36 @@
 
   html {
     scroll-behavior: smooth;
+    /* The header is fixed, so anchor targets must clear it. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
+    /* Avoids the horizontal jitter caused by full-bleed rounded sections. */
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
     @apply font-semibold tracking-tight;
+    text-wrap: balance;
+  }
+
+  /* Honour the OS setting: no reveal animations, no smooth scrolling. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -208,6 +234,62 @@
 
   .text-reveal:hover::after {
     @apply w-full;
+  }
+
+  /*
+   * Frosted panel WITHOUT backdrop-filter.
+   *
+   * backdrop-filter forces the compositor to re-sample and re-blur everything
+   * behind the element on every frame. With dozens of these stacked over
+   * full-bleed background photos it was the single biggest cause of the scroll
+   * stutter. Over a photographic background a layered translucent gradient plus
+   * an inset highlight is visually equivalent and costs nothing to scroll.
+   */
+  .surface-frost {
+    background-image: linear-gradient(
+      135deg,
+      hsl(0 0% 100% / 0.16) 0%,
+      hsl(0 0% 100% / 0.06) 100%
+    );
+    border: 1px solid hsl(0 0% 100% / 0.16);
+    box-shadow:
+      0 8px 32px hsl(0 0% 0% / 0.22),
+      inset 0 1px 0 hsl(0 0% 100% / 0.2);
+  }
+
+  .surface-frost-strong {
+    background-image: linear-gradient(
+      135deg,
+      hsl(0 0% 100% / 0.24) 0%,
+      hsl(0 0% 100% / 0.09) 100%
+    );
+    border: 1px solid hsl(0 0% 100% / 0.26);
+    box-shadow:
+      0 8px 32px hsl(0 0% 0% / 0.28),
+      inset 0 1px 0 hsl(0 0% 100% / 0.24);
+  }
+
+  /* For panels sitting directly on top of photography, where the removed blur
+     was doing the work of separating text from a busy image. */
+  .surface-frost-dark {
+    background-image: linear-gradient(
+      135deg,
+      hsl(0 0% 4% / 0.72) 0%,
+      hsl(0 0% 4% / 0.55) 100%
+    );
+    border: 1px solid hsl(0 0% 100% / 0.14);
+    box-shadow:
+      0 8px 32px hsl(0 0% 0% / 0.3),
+      inset 0 1px 0 hsl(0 0% 100% / 0.12);
+  }
+
+  /*
+   * Lets the browser skip layout, paint and style for off-screen sections.
+   * contain-intrinsic-size keeps the scrollbar stable while they are skipped.
+   */
+  .section-defer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
   }
 
   /* Container for sections */

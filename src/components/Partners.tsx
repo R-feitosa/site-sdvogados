@@ -40,9 +40,7 @@ export default function Partners() {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.6
         }} className="text-4xl text-gray-900 leading-tight md:text-3xl font-medium">
             Nossos<br />
@@ -58,9 +56,7 @@ export default function Partners() {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.5,
           delay: index * 0.1
         }} className="group">
@@ -71,27 +67,16 @@ export default function Partners() {
                 <img src={partner.photo} alt={partner.name} className="absolute inset-0 w-full h-full object-cover object-[center_20%] transition-transform duration-500 group-hover:scale-105" />
                 
                 {/* Subtle gradient only at bottom for text readability */}
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
                 
                 {/* LinkedIn Button - Top Right */}
-                <a href={partner.linkedin} target="_blank" rel="noopener noreferrer" className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 z-10" style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.3)'
-            }}>
+                <a href={partner.linkedin} target="_blank" rel="noopener noreferrer" className="surface-frost-strong absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full transition-transform duration-300 hover:scale-110">
                   <Linkedin className="w-5 h-5 text-white" />
                 </a>
                 
                 {/* Glass Info Panel at Bottom */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                  <div className="rounded-xl p-4 text-center" style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255,255,255,0.25)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3)'
-              }}>
+                  <div className="surface-frost-dark rounded-xl p-4 text-center">
                     <h3 className="font-display text-lg md:text-xl font-bold text-white mb-1">
                       {partner.name}
                     </h3>

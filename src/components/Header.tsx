@@ -1,197 +1,251 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { useActiveSection, useScrolled } from "@/hooks/useScrollProgress";
 import logoHeader from "@/assets/logo-header.png";
 
 const navLinks = [
-  { label: "Início", href: "#inicio" },
-  { label: "Área de Atuação", href: "#areas" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Contato", href: "#contato" },
+  { label: "Início", id: "inicio" },
+  { label: "Áreas de Atuação", id: "areas" },
+  { label: "Sócios", id: "socios" },
+  { label: "Quem Somos", id: "quem-somos" },
+  { label: "Contato", id: "contato" },
 ];
 
+const sectionIds = navLinks.map((link) => link.id);
+
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isScrolled = useScrolled(24);
+  const activeSection = useActiveSection(useMemo(() => sectionIds, []));
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const isHome = location.pathname === "/";
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
+    if (!isMobileMenuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
   }, [isMobileMenuOpen]);
 
-  const scrollToSection = (href: string) => {
-    if (location.pathname !== "/") {
-      navigate("/" + href);
-    } else {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+  const goToSection = useCallback(
+    (id: string) => {
+      setIsMobileMenuOpen(false);
+      if (!isHome) {
+        navigate("/#" + id);
+        return;
       }
-    }
-    setIsMobileMenuOpen(false);
-  };
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [isHome, navigate],
+  );
 
   return (
-    <>
-      <header className="absolute top-0 left-0 right-0 z-50 pt-6 pb-4 md:py-6 lg:py-8">
-        <div className="px-5 md:px-8 lg:px-14">
-          <nav className="flex items-center justify-between">
-            {/* Logo - Left */}
-            <a
-              href="#inicio"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("#inicio");
-              }}
-              className="flex items-center group z-10"
-            >
-              <img 
-                src={logoHeader} 
-                alt="Rfeitosa Advogados Associados" 
-                className="h-10 md:h-[56px] w-auto transition-all duration-300 group-hover:opacity-80"
-              />
-            </a>
-
-            {/* Desktop Navigation - Centered White Nav */}
-            <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
-              <div 
-                className="relative flex items-center py-2 xl:py-3 rounded-full bg-white shadow-md"
-                style={{
-                  paddingLeft: '16px',
-                  paddingRight: '16px',
-                  gap: '2px',
-                }}
-              >
-                {navLinks.map((link) => (
-                  <a
-                    key={link.href + link.label}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(link.href);
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+      {/* Mobile sheet is rendered first and sits below the bar, so the bar —
+          logo and close button included — stays visible while the menu is open. */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="pointer-events-auto fixed inset-0 z-0 bg-neutral-950 lg:hidden"
+          >
+            <div className="flex h-full flex-col px-6 pb-10 pt-28">
+              <nav className="flex flex-1 flex-col justify-center">
+                {navLinks.map((link, index) => (
+                  <motion.a
+                    key={link.id}
+                    href={`#${link.id}`}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 + index * 0.05, duration: 0.35, ease: "easeOut" }}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      goToSection(link.id);
                     }}
-                    className="relative font-medium transition-all whitespace-nowrap text-xs xl:text-sm group px-3 xl:px-4 py-1.5 xl:py-2 rounded-full"
-                    style={{ color: '#800020' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#800020';
-                      e.currentTarget.style.color = '#ffffff';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = '#800020';
-                    }}
+                    className="group flex items-center justify-between border-b border-white/10 py-5 text-2xl font-light tracking-tight text-white/90 transition-colors duration-300 active:text-white"
                   >
                     {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Right side - Trabalhe Conosco button (same size as menu) */}
-            <div className="hidden lg:flex z-10">
-              <div 
-                className="relative flex items-center py-2 xl:py-3 rounded-full bg-white shadow-md"
-                style={{
-                  paddingLeft: '16px',
-                  paddingRight: '16px',
-                }}
-              >
-                <a
-                  href="#contato"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection("#contato");
-                  }}
-                  className="relative font-medium transition-all whitespace-nowrap text-xs xl:text-sm px-3 xl:px-4 py-1.5 xl:py-2 rounded-full"
-                  style={{ color: '#800020' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#800020';
-                    e.currentTarget.style.color = '#ffffff';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#800020';
-                  }}
-                >
-                  Trabalhe Conosco
-                </a>
-              </div>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center z-[60]"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5 text-primary" /> : <Menu className="w-5 h-5 text-primary" />}
-            </button>
-          </nav>
-        </div>
-
-        {/* Mobile Menu - Full Screen Overlay */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="lg:hidden fixed inset-0 z-50 bg-white"
-            >
-              <div className="flex flex-col h-full px-6 pt-20 pb-10">
-                <div className="flex-1 flex flex-col justify-center space-y-2">
-                  {navLinks.map((link, index) => (
-                    <motion.a
-                      key={link.href + link.label}
-                      href={link.href}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.08 }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToSection(link.href);
-                      }}
-                      className="block py-4 text-2xl font-medium text-gray-900 hover:text-primary transition-colors border-b border-gray-100"
-                    >
-                      {link.label}
-                    </motion.a>
-                  ))}
-                  <motion.a
-                    href="#contato"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: navLinks.length * 0.08 }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection("#contato");
-                    }}
-                    className="block py-4 text-2xl font-medium text-primary hover:text-primary/80 transition-colors"
-                  >
-                    Trabalhe Conosco
+                    <ArrowUpRight className="h-5 w-5 text-white/30 transition-transform duration-300 group-active:translate-x-1" />
                   </motion.a>
-                </div>
-              </div>
-            </motion.div>
+                ))}
+              </nav>
+
+              <motion.a
+                href="#contato"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 + navLinks.length * 0.05, duration: 0.35 }}
+                onClick={(event) => {
+                  event.preventDefault();
+                  goToSection("contato");
+                }}
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-brand-light to-brand px-6 py-4 text-base font-semibold text-white"
+              >
+                Trabalhe Conosco
+                <ArrowUpRight className="h-5 w-5" />
+              </motion.a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div
+        className={cn(
+          "relative z-10 px-4 transition-[padding] duration-500 ease-out md:px-6 lg:px-10",
+          isScrolled ? "pt-2 md:pt-3" : "pt-4 md:pt-6",
+        )}
+      >
+        <nav
+          className={cn(
+            "pointer-events-auto mx-auto flex max-w-[1440px] items-center justify-between gap-4",
+            "rounded-full border px-3 py-2 md:px-4 md:py-2.5",
+            "transition-[background-color,border-color,box-shadow] duration-500 ease-out",
+            isMobileMenuOpen
+              ? "border-transparent bg-transparent shadow-none"
+              : isScrolled
+                ? "border-black/[0.06] bg-white/85 shadow-[0_10px_40px_-16px_rgba(15,12,14,0.35)] supports-[backdrop-filter]:bg-white/70 supports-[backdrop-filter]:backdrop-blur-xl"
+                : "border-white/20 bg-white/10 supports-[backdrop-filter]:backdrop-blur-md",
           )}
-        </AnimatePresence>
-      </header>
-    </>
+        >
+          {/* Logo */}
+          <a
+            href="#inicio"
+            onClick={(event) => {
+              event.preventDefault();
+              goToSection("inicio");
+            }}
+            className="flex shrink-0 items-center rounded-full pl-1 pr-2 outline-none transition-opacity duration-300 hover:opacity-70 focus-visible:ring-2 focus-visible:ring-brand/50"
+            aria-label="Rfeitosa Advogados Associados — ir para o início"
+          >
+            <img
+              src={logoHeader}
+              alt="Rfeitosa Advogados Associados"
+              width={220}
+              height={56}
+              className={cn(
+                "w-auto transition-[height] duration-500 ease-out",
+                isScrolled ? "h-8 md:h-10" : "h-9 drop-shadow-[0_1px_10px_rgba(0,0,0,0.35)] md:h-12",
+              )}
+            />
+          </a>
+
+          {/* Desktop navigation */}
+          <ul className="hidden items-center gap-0.5 lg:flex">
+            {navLinks.map((link) => {
+              const isActive = isHome && activeSection === link.id;
+              return (
+                <li key={link.id}>
+                  <a
+                    href={`#${link.id}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      goToSection(link.id);
+                    }}
+                    aria-current={isActive ? "true" : undefined}
+                    className={cn(
+                      "relative flex items-center rounded-full px-3.5 py-2 text-[13px] font-medium tracking-tight",
+                      "outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-brand/50 xl:px-4 xl:text-sm",
+                      isScrolled
+                        ? isActive
+                          ? "text-brand"
+                          : "text-neutral-600 hover:text-brand"
+                        : isActive
+                          ? "text-white"
+                          : "text-white/70 hover:text-white",
+                    )}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-active-pill"
+                        transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.7 }}
+                        className={cn(
+                          "absolute inset-0 -z-10 rounded-full",
+                          isScrolled ? "bg-brand/[0.08]" : "bg-white/15",
+                        )}
+                      />
+                    )}
+                    <span className="relative">{link.label}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Desktop CTA */}
+          <a
+            href="#contato"
+            onClick={(event) => {
+              event.preventDefault();
+              goToSection("contato");
+            }}
+            className={cn(
+              "group hidden shrink-0 items-center gap-1.5 rounded-full py-2.5 pl-5 pr-4 lg:inline-flex",
+              "text-[13px] font-semibold tracking-tight text-white xl:text-sm",
+              "bg-gradient-to-br from-brand-light to-brand",
+              "shadow-[0_8px_24px_-10px_hsl(var(--brand)/0.9)]",
+              "outline-none transition-[box-shadow,transform] duration-300",
+              "hover:shadow-[0_14px_32px_-10px_hsl(var(--brand)/0.95)] active:scale-[0.98]",
+              "focus-visible:ring-2 focus-visible:ring-white/70",
+            )}
+          >
+            Trabalhe Conosco
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+
+          {/* Mobile trigger */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={isMobileMenuOpen}
+            className={cn(
+              "relative z-[60] flex h-10 w-10 shrink-0 items-center justify-center rounded-full lg:hidden",
+              "outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-brand/50",
+              isMobileMenuOpen
+                ? "bg-white/10 text-white"
+                : isScrolled
+                  ? "bg-brand/[0.08] text-brand"
+                  : "bg-white/15 text-white ring-1 ring-inset ring-white/25",
+            )}
+          >
+            <AnimatePresence initial={false} mode="wait">
+              {isMobileMenuOpen ? (
+                <motion.span
+                  key="close"
+                  initial={{ opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 90 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  <X className="h-5 w-5" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="open"
+                  initial={{ opacity: 0, rotate: 90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: -90 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  <Menu className="h-5 w-5" />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        </nav>
+      </div>
+
+    </header>
   );
 }

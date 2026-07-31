@@ -32,9 +32,7 @@ export default function MissionValues() {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.6
         }} className="text-center mb-16 lg:mb-24">
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-white font-medium tracking-tight">Nossos Princípios</h2>
@@ -50,9 +48,7 @@ export default function MissionValues() {
             }} whileInView={{
               opacity: 1,
               y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
+            }} viewport={{ once: true, amount: 0.15 }} transition={{
               duration: 0.6,
               delay: index * 0.15
             }} className="flex-1" style={{
@@ -60,8 +56,6 @@ export default function MissionValues() {
             }}>
                   <div className="rounded-3xl p-8 border border-white/15 hover:border-white/25 transition-all duration-500" style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)'
               }}>
                     <h3 className="font-display text-lg font-semibold text-white mb-3">
                       {item.title}
@@ -81,16 +75,12 @@ export default function MissionValues() {
             }} whileInView={{
               opacity: 1,
               y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
+            }} viewport={{ once: true, amount: 0.15 }} transition={{
               duration: 0.5,
               delay: index * 0.1
             }}>
                   <div className="rounded-2xl p-6 border border-white/15" style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)'
               }}>
                     <h3 className="font-display text-lg font-semibold text-white mb-2">
                       {item.title}
