@@ -37,7 +37,7 @@ export default function History() {
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.8 }}
           >
             <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
@@ -72,7 +72,7 @@ export default function History() {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.8 }}
             className="relative"
           >
@@ -82,7 +82,7 @@ export default function History() {
                   key={item.year}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, amount: 0.15 }}
                   transition={{ duration: 0.5, delay: index * 0.15 }}
                   className="relative pl-16"
                 >
@@ -92,7 +92,7 @@ export default function History() {
                   )}
 
                   {/* Icon */}
-                  <div className="absolute left-0 w-12 h-12 rounded-full bg-primary/80 backdrop-blur-sm flex items-center justify-center border border-accent/30">
+                  <div className="absolute left-0 w-12 h-12 rounded-full bg-primary flex items-center justify-center border border-accent/30">
                     <item.icon className="w-5 h-5 text-primary-foreground" />
                   </div>
 

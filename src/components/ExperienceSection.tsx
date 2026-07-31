@@ -34,9 +34,7 @@ const AnimatedStat = ({
     duration: 0.7,
     delay: index * 0.15,
     ease: [0.25, 0.1, 0.25, 1]
-  }} viewport={{
-    once: true
-  }}>
+  }} viewport={{ once: true, amount: 0.15 }}>
       <p className="text-4xl md:text-5xl lg:text-7xl font-light text-primary tracking-tight">
         {isVisible ? displayValue : `0${suffix}`}
       </p>
@@ -68,9 +66,7 @@ const BlurRevealText = ({
     duration: 0.8,
     delay,
     ease: [0.25, 0.1, 0.25, 1]
-  }} viewport={{
-    once: true
-  }}>
+  }} viewport={{ once: true, amount: 0.15 }}>
       {children}
     </motion.div>;
 };
@@ -105,9 +101,7 @@ const ExperienceSection = () => {
           x: 0
         }} transition={{
           duration: 0.8
-        }} viewport={{
-          once: true
-        }} className="lg:col-span-5 relative px-4 md:px-12 lg:pl-20 lg:pr-0 flex">
+        }} viewport={{ once: true, amount: 0.15 }} className="lg:col-span-5 relative px-4 md:px-12 lg:pl-20 lg:pr-0 flex">
             <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl shadow-xl w-full">
               <img src={teamOfficePhoto} alt="Escritório RFeitosa Advogados" className="w-full h-full min-h-[350px] md:min-h-[480px] object-cover object-right" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />

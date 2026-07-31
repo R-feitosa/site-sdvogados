@@ -85,9 +85,7 @@ const Awards = () => {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.6
         }} className="text-4xl md:text-5xl font-light text-gray-900 leading-tight">
             Reconhecimento e<br />
@@ -99,9 +97,7 @@ const Awards = () => {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.6,
           delay: 0.1
         }} className="max-w-md text-gray-600 text-lg">
@@ -136,8 +132,6 @@ const Awards = () => {
                     {isCenter ? (/* Center Card - Featured Glass Style with Primary Color */
                 <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-l-2 border-r-2 md:border border-primary/40 md:border-primary/30 shadow-[0_4px_16px_0_rgba(128,0,32,0.15)] md:shadow-[0_8px_32px_0_rgba(128,0,32,0.25)]" style={{
                   background: 'linear-gradient(135deg, hsl(var(--primary) / 0.95) 0%, hsl(var(--primary) / 0.8) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)'
                 }}>
                         {/* Glass accent border */}
                         <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
@@ -158,7 +152,7 @@ const Awards = () => {
                                 className="max-h-32 max-w-[280px] w-auto object-contain mx-auto drop-shadow-lg"
                               />
                             ) : (
-                              <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center mx-auto shadow-lg">
+                              <div className="w-24 h-24 rounded-2xl surface-frost-strong flex items-center justify-center mx-auto shadow-lg">
                                 <span className="text-white text-xl font-bold">{award.abbreviation}</span>
                               </div>
                             )}
@@ -181,8 +175,6 @@ const Awards = () => {
                       </div>) : (/* Side Cards - Glass Style with Primary Color */
                 <div className="relative rounded-3xl p-8 h-[380px] flex flex-col justify-between border border-primary/20 shadow-[0_8px_32px_0_rgba(128,0,32,0.15)]" style={{
                   background: 'linear-gradient(135deg, hsl(var(--primary) / 0.85) 0%, hsl(var(--primary) / 0.7) 100%)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)'
                 }}>
                         {/* Glass accent border */}
                         <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />

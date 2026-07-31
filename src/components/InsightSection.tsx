@@ -142,9 +142,7 @@ const BrazilMap = () => {
         }} transition={{
           duration: 0.3,
           delay: 0.02 * i
-        }} viewport={{
-          once: true
-        }} cx={state.x} cy={state.y} r="2.5" className="fill-primary" />
+        }} viewport={{ once: true, amount: 0.15 }} cx={state.x} cy={state.y} r="2.5" className="fill-primary" />
             <motion.circle initial={{
           scale: 0
         }} whileInView={{
@@ -152,9 +150,7 @@ const BrazilMap = () => {
         }} transition={{
           duration: 0.3,
           delay: 0.02 * i
-        }} viewport={{
-          once: true
-        }} cx={state.x} cy={state.y} r="1" className="fill-white" />
+        }} viewport={{ once: true, amount: 0.15 }} cx={state.x} cy={state.y} r="1" className="fill-white" />
           </g>)}
       </svg>
     </div>;
@@ -182,9 +178,7 @@ const InsightSection = () => {
           x: 0
         }} transition={{
           duration: 0.6
-        }} viewport={{
-          once: true
-        }} className="lg:col-span-6 relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-white via-gray-50/80 to-white border border-gray-200/60 shadow-sm flex flex-col justify-center">
+        }} viewport={{ once: true, amount: 0.15 }} className="lg:col-span-6 relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-white via-gray-50/80 to-white border border-gray-200/60 shadow-sm flex flex-col justify-center">
             {/* Decorative elements */}
             <div className="absolute top-0 left-0 w-28 h-28 bg-gradient-to-br from-primary/5 to-transparent rounded-br-full" />
             <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-primary/3 to-transparent rounded-tl-full" />
@@ -214,9 +208,7 @@ const InsightSection = () => {
           x: 0
         }} transition={{
           duration: 0.6
-        }} viewport={{
-          once: true
-        }} className="lg:col-span-6 relative h-full">
+        }} viewport={{ once: true, amount: 0.15 }} className="lg:col-span-6 relative h-full">
             <div className="relative rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl h-full min-h-[400px]">
               <img src={teamHistoryPhoto} alt="Equipe RFeitosa Advogados" className="absolute inset-0 w-full h-full object-cover" />
               
@@ -235,9 +227,7 @@ const InsightSection = () => {
           }} transition={{
             duration: 0.6,
             delay: 0.1
-          }} viewport={{
-            once: true
-          }} className="relative overflow-hidden rounded-2xl p-5 flex-1 bg-gradient-to-br from-white via-gray-50/80 to-white border border-gray-200/60 shadow-sm">
+          }} viewport={{ once: true, amount: 0.15 }} className="relative overflow-hidden rounded-2xl p-5 flex-1 bg-gradient-to-br from-white via-gray-50/80 to-white border border-gray-200/60 shadow-sm">
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full" />
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/3 to-transparent rounded-tr-full" />
@@ -275,9 +265,7 @@ const InsightSection = () => {
           }} transition={{
             duration: 0.6,
             delay: 0.2
-          }} viewport={{
-            once: true
-          }} className="relative overflow-hidden rounded-2xl p-6 flex-1 bg-gradient-to-br from-white via-gray-50/80 to-white border border-gray-200/60 shadow-sm">
+          }} viewport={{ once: true, amount: 0.15 }} className="relative overflow-hidden rounded-2xl p-6 flex-1 bg-gradient-to-br from-white via-gray-50/80 to-white border border-gray-200/60 shadow-sm">
               {/* Decorative elements */}
               <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-primary/5 to-transparent rounded-br-full" />
               <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-primary/4 to-transparent rounded-tl-full" />
@@ -327,9 +315,7 @@ const InsightSection = () => {
                   }} transition={{
                     duration: 0.5,
                     delay: 0.1 * i
-                  }} viewport={{
-                    once: true
-                  }} className={`w-full rounded-t-md origin-bottom shadow-sm ${bar.highlight ? 'bg-gradient-to-t from-primary to-primary/90' : 'bg-gradient-to-t from-primary/30 to-primary/20'}`} style={{
+                  }} viewport={{ once: true, amount: 0.15 }} className={`w-full rounded-t-md origin-bottom shadow-sm ${bar.highlight ? 'bg-gradient-to-t from-primary to-primary/90' : 'bg-gradient-to-t from-primary/30 to-primary/20'}`} style={{
                     height: `${bar.height}%`
                   }} />
                     </div>

@@ -43,7 +43,7 @@ export default function BlogSection() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6 }}
             className="text-4xl md:text-5xl font-light text-white leading-tight"
           >
@@ -53,7 +53,7 @@ export default function BlogSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex items-center gap-3"
           >

@@ -16,8 +16,6 @@ const companies = [
 
 const glassStyle = {
   background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(255,255,255,0.2)',
   boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
 };
@@ -27,7 +25,7 @@ const CompanyCards = ({ className = "" }: { className?: string }) => (
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.6, delay: 0.2 }}
-    viewport={{ once: true }}
+    viewport={{ once: true, amount: 0.15 }}
     className={`flex items-center w-full ${className}`}
   >
     {companies.map((company, index) => (
@@ -36,7 +34,7 @@ const CompanyCards = ({ className = "" }: { className?: string }) => (
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-        viewport={{ once: true }}
+        viewport={{ once: true, amount: 0.15 }}
         className="flex-1 aspect-square rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300 group cursor-pointer"
         style={{
           ...glassStyle,
@@ -63,7 +61,7 @@ export default function RFGroupEcosystem() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             className="mb-6"
           >
             <h2 className="text-2xl md:text-3xl leading-[1.2] font-sans tracking-tight mb-4">
@@ -87,7 +85,7 @@ export default function RFGroupEcosystem() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.15 }}
               className="mb-6"
             >
               <h2 className="text-3xl leading-[1.2] font-sans tracking-tight">
@@ -101,7 +99,7 @@ export default function RFGroupEcosystem() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.15 }}
               className="text-lg leading-relaxed text-justify text-muted font-sans font-normal"
             >
               Nascemos do inconformismo com soluções jurídicas fragmentadas. O RF Group é um hub estratégico que integra advocacia especializada, compliance corporativo, estruturação societária e inteligência de negócios em um único ecossistema. Atuamos como parceiros técnicos de empresas que exigem rigor jurídico aliado à visão empresarial, oferecendo desde assessoria preventiva e contenciosa até fomento econômico e desenvolvimento imobiliário. Cada unidade do grupo opera com autonomia e expertise própria, mas conectadas por uma filosofia comum: entregar soluções completas, tecnicamente robustas e orientadas a resultados mensuráveis.
@@ -117,7 +115,7 @@ export default function RFGroupEcosystem() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
           >
             <img
               src={ecosystemImage}

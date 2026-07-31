@@ -83,16 +83,7 @@ const HeroStatCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-      className="flex-1 min-w-0"
-      style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.2)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
-        borderRadius: '16px',
-        padding: '16px 16px',
-      }}
+      className="surface-frost min-w-0 flex-1 rounded-2xl p-4"
     >
       <div 
         className="font-bold mb-1"
@@ -150,16 +141,18 @@ export default function Hero() {
   return (
     <section id="inicio" className="px-2 md:px-4 pt-2 md:pt-4 pb-2 md:pb-4 bg-white">
       <div className="relative min-h-[calc(100vh-1rem)] md:min-h-[calc(100vh-2rem)] overflow-hidden flex flex-col justify-end lg:justify-end rounded-2xl lg:rounded-3xl">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-2xl lg:rounded-3xl"
-          style={{
-            backgroundImage: `url(${heroBackground})`
-          }}
+        {/* Background Image — a real <img> so the browser can prioritise it as LCP */}
+        <img
+          src={heroBackground}
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full rounded-2xl object-cover lg:rounded-3xl"
         />
-        
-        {/* Overlay escuro sutil */}
-        <div className="absolute inset-0 bg-black/30 rounded-2xl lg:rounded-3xl" />
+
+        {/* Gradient scrim: keeps the copy legible without darkening the whole photo */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-black/50 via-black/25 to-black/75 lg:rounded-3xl" />
 
         <div className="px-4 md:px-6 lg:px-10 relative z-10 pb-6 md:pb-16 lg:pb-20 pt-20 md:pt-0 w-full">
           <div className="flex flex-col lg:flex-row lg:justify-between gap-6 lg:gap-12">
@@ -199,14 +192,7 @@ export default function Hero() {
                 <button
                   type="button"
                   onClick={() => scrollToSection("#areas")}
-                  className="inline-flex items-center justify-center gap-2 px-5 md:px-7 py-2.5 md:py-3 rounded-full font-semibold transition-all duration-300 text-white hover:scale-105 text-sm md:text-base"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 100%)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
-                  }}
+                  className="surface-frost-strong inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98] md:px-7 md:py-3 md:text-base"
                 >
                   Nossas Áreas
                 </button>

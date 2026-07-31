@@ -100,7 +100,7 @@ export default function Services() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
@@ -129,7 +129,7 @@ export default function Services() {
             <motion.div
               key={service.title}
               variants={itemVariants}
-              className="group bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 hover-lift cursor-pointer transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
+              className="group bg-white border border-gray-100 rounded-2xl p-6 hover-lift cursor-pointer transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
             >
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary group-hover:shadow-gold transition-all duration-300">
                 <service.icon className="w-7 h-7 text-primary group-hover:text-white transition-colors duration-300" />

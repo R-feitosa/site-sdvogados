@@ -35,9 +35,7 @@ export default function About() {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.6
         }} className="text-4xl md:text-5xl font-light text-gray-900 leading-tight">
             Sobre o<br />
@@ -49,9 +47,7 @@ export default function About() {
         }} whileInView={{
           opacity: 1,
           y: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.6,
           delay: 0.1
         }} className="max-w-md text-gray-600 text-lg">
@@ -66,9 +62,7 @@ export default function About() {
         }} whileInView={{
           opacity: 1,
           x: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.8
         }} className="relative">
             <div className="relative">
@@ -87,15 +81,11 @@ export default function About() {
             }} whileInView={{
               opacity: 1,
               y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
+            }} viewport={{ once: true, amount: 0.15 }} transition={{
               duration: 0.6,
               delay: 0.4
             }} className="absolute -bottom-8 -right-8 rounded-xl p-6 border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.12)]" style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)'
             }}>
                 {/* Glass accent border */}
                 <div className="absolute inset-0 rounded-xl border border-white/40 pointer-events-none" />
@@ -119,9 +109,7 @@ export default function About() {
         }} whileInView={{
           opacity: 1,
           x: 0
-        }} viewport={{
-          once: true
-        }} transition={{
+        }} viewport={{ once: true, amount: 0.15 }} transition={{
           duration: 0.8
         }}>
             <h3 className="text-3xl md:text-4xl font-light text-gray-900 mb-2">
@@ -150,9 +138,7 @@ export default function About() {
             }} whileInView={{
               opacity: 1,
               x: 0
-            }} viewport={{
-              once: true
-            }} transition={{
+            }} viewport={{ once: true, amount: 0.15 }} transition={{
               duration: 0.4,
               delay: index * 0.1
             }} className="flex items-center gap-3">

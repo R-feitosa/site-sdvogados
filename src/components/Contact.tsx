@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import LazyVideoBackground from "@/components/LazyVideoBackground";
 import rfeitosaVideo from "@/assets/rfeitosa-video-2.mp4";
+import contactPoster from "@/assets/office-facade.jpg";
 
 const contactInfo = [
   {
@@ -78,19 +80,14 @@ export default function Contact() {
 
   return (
     <section id="contato" className="py-20 relative overflow-hidden">
-      {/* Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          src={rfeitosaVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-        />
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-black/70" />
-      </div>
+      {/* Video Background — poster first, video only once the section is near */}
+      <LazyVideoBackground
+        src={rfeitosaVideo}
+        poster={contactPoster}
+        className="absolute inset-0 z-0"
+      />
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 z-[1] bg-black/75" />
 
       <div className="section-container relative z-10">
         {/* Header - Title left, description right */}
@@ -98,7 +95,7 @@ export default function Contact() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6 }}
             className="text-4xl md:text-5xl font-light text-white leading-tight"
           >
@@ -107,7 +104,7 @@ export default function Contact() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="max-w-lg text-white/80 text-lg"
           >
@@ -120,11 +117,11 @@ export default function Contact() {
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.8 }}
             className="lg:col-span-2 space-y-6"
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 text-white border border-white/10 h-full flex flex-col">
+            <div className="surface-frost-dark rounded-2xl p-8 text-white h-full flex flex-col">
               <h3 className="font-display text-2xl font-semibold mb-6 text-white">
                 Informações de Contato
               </h3>
@@ -178,11 +175,11 @@ export default function Contact() {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.8 }}
             className="lg:col-span-3"
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+            <div className="surface-frost-dark rounded-2xl p-8">
               <h3 className="font-display text-2xl font-semibold text-white mb-2">
                 Envie sua Mensagem
               </h3>
