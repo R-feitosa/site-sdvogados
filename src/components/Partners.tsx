@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Linkedin } from "lucide-react";
 import partnerRoneely from "@/assets/partner-roneely.jpg";
 import partnerTayse from "@/assets/partner-tayse.jpg";
-import partnerAnderson from "@/assets/partner-anderson.jpg";
 import partnerFabio from "@/assets/partner-fabio.jpg";
 const partners = [{
   name: "Dr. Roneely Feitosa",
@@ -16,12 +15,6 @@ const partners = [{
   specialty: "Diretora Financeira",
   photo: partnerTayse,
   linkedin: "https://www.linkedin.com/in/tayse-feitosa-831243192"
-}, {
-  name: "Dr. Anderson Jorge",
-  role: "Sócio",
-  specialty: "Diretor",
-  photo: partnerAnderson,
-  linkedin: "https://linkedin.com/in/"
 }, {
   name: "Dr. Fabio Freitas",
   role: "Sócio",
@@ -49,7 +42,7 @@ export default function Partners() {
           
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
           {partners.map((partner, index) => <motion.div key={partner.name} initial={{
           opacity: 0,
           y: 30
