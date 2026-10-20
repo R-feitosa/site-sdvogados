@@ -1,95 +1,75 @@
-import { Suspense, lazy, useEffect } from "react";
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
+import Preloader from "@/components/Preloader";
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import LogoCarousel from "@/components/LogoCarousel";
-
-/**
- * Only the header, hero and logo strip are part of the first paint. Everything
- * below the fold is split into its own chunk so the initial bundle stays small
- * and the main thread is not busy mounting sections the user cannot see yet.
- */
-const InsightSection = lazy(() => import("@/components/InsightSection"));
-const PracticeAreas = lazy(() => import("@/components/PracticeAreas"));
-const Partners = lazy(() => import("@/components/Partners"));
-const Awards = lazy(() => import("@/components/Awards"));
-const ExperienceSection = lazy(() => import("@/components/ExperienceSection"));
-const MissionValues = lazy(() => import("@/components/MissionValues"));
-const RFGroupEcosystem = lazy(() => import("@/components/RFGroupEcosystem"));
-const Contact = lazy(() => import("@/components/Contact"));
-const Footer = lazy(() => import("@/components/Footer"));
-
-/** Reserves vertical space while a chunk loads so the page never jumps. */
-const SectionFallback = () => <div className="min-h-[60vh]" aria-hidden="true" />;
+import Footer from "@/components/Footer";
+import GlassCursor from "@/components/fx/GlassCursor";
+import { Ambient, ScrollProgress, SectionRail, WhatsAppFab } from "@/components/Chrome";
+import Hero from "@/components/sections/Hero";
+import Clients from "@/components/sections/Clients";
+import Performance from "@/components/sections/Performance";
+import PracticeAreas from "@/components/sections/PracticeAreas";
+import Partners from "@/components/sections/Partners";
+import Awards from "@/components/sections/Awards";
+import Story from "@/components/sections/Story";
+import Principles from "@/components/sections/Principles";
+import Ecosystem from "@/components/sections/Ecosystem";
+import Contact from "@/components/sections/Contact";
+import { useSite } from "@/providers/SiteProvider";
+import { COMPLIANCE } from "@/content/site";
 
 const Index = () => {
   const location = useLocation();
+  const { introDone, scrollTo } = useSite();
 
+  // Link direto para uma seção (ex.: /#contato): rola depois da abertura
   useEffect(() => {
-    if (!location.hash) return;
+    if (!introDone || !location.hash) return;
     const id = location.hash.slice(1);
-    // The target may live in a lazily loaded chunk, so poll briefly for it.
-    let attempts = 0;
-    const timer = window.setInterval(() => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-        window.clearInterval(timer);
-      } else if (++attempts > 20) {
-        window.clearInterval(timer);
-      }
-    }, 100);
-    return () => window.clearInterval(timer);
-  }, [location.hash]);
+    const t = window.setTimeout(() => scrollTo(id), 250);
+    return () => window.clearTimeout(t);
+  }, [introDone, location.hash, scrollTo]);
 
   return (
     <>
       <Helmet>
-        <title>Rfeitosa Advogados Associados | Excelência Jurídica em São Paulo</title>
+        <title>Rfeitosa Advogados Associados | Advocacia empresarial em Sobral/CE</title>
         <meta
           name="description"
-          content="Escritório de advocacia especializado em Direito Empresarial, Civil, Tributário e Trabalhista. Mais de 25 anos de experiência oferecendo soluções jurídicas personalizadas."
+          content="Escritório de advocacia empresarial fundado em 2011 em Sobral/CE. Direito Trabalhista, Empresarial, Tributário, Previdenciário, Civil e Administrativo."
         />
-        <meta
-          name="keywords"
-          content="advogado empresarial São Paulo, direito tributário, assessoria jurídica, advocacia corporativa, Rfeitosa"
-        />
-        <link rel="canonical" href="https://rfeitosa.com.br" />
+        <link rel="canonical" href="https://rfeitosa.com.br/" />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main>
-          <Hero />
-          <LogoCarousel />
-          <Suspense fallback={<SectionFallback />}>
-            <div className="section-defer">
-              <InsightSection />
-            </div>
-            {/* PracticeAreas drives its own sticky scroll, so it must not be
-                inside a content-visibility container. Neither may the sections
-                the header's scroll-spy observes (#socios, #quem-somos): skipped
-                content has no layout box for IntersectionObserver to report. */}
-            <PracticeAreas />
-            <Partners />
-            <div className="section-defer">
-              <Awards />
-            </div>
-            <ExperienceSection />
-            <div className="section-defer">
-              <MissionValues />
-            </div>
-            <div className="section-defer">
-              <RFGroupEcosystem />
-            </div>
-            <Contact />
-          </Suspense>
-        </main>
-        <Suspense fallback={null}>
-          <Footer />
-        </Suspense>
-      </div>
+      <a
+        href="#conteudo"
+        className="sr-only z-[400] rounded-full bg-white px-4 py-2 text-[#800020] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Pular para o conteúdo
+      </a>
+
+      <Preloader />
+      <Ambient />
+      <ScrollProgress />
+      <GlassCursor />
+      <Header />
+      <SectionRail />
+      <WhatsAppFab />
+
+      <main id="conteudo" className="noise relative">
+        <Hero />
+        {COMPLIANCE.showClientLogos && <Clients />}
+        <Performance />
+        <PracticeAreas />
+        <Partners />
+        <Awards />
+        <Story />
+        <Principles />
+        <Ecosystem />
+        <Contact />
+      </main>
+      <Footer />
     </>
   );
 };

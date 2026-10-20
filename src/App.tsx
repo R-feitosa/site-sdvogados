@@ -1,35 +1,26 @@
-import { Suspense, lazy } from "react";
 import { HelmetProvider } from "react-helmet-async";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
+import { BrowserRouter, MemoryRouter, Routes, Route } from "react-router-dom";
+import { SiteProvider } from "@/providers/SiteProvider";
 import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
 
-// Secondary routes are split out so they never weigh on the landing page.
-const NotFound = lazy(() => import("./pages/NotFound"));
-
-const queryClient = new QueryClient();
+// VITE_ROUTER=memory é usado só na prévia hospedada (sem controle do caminho da URL)
+const Router = import.meta.env.VITE_ROUTER === "memory" ? MemoryRouter : BrowserRouter;
 
 const App = () => (
   <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<div className="min-h-screen bg-background" />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <MotionConfig reducedMotion="user">
+    <Router>
+      <SiteProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {/* Adicione rotas personalizadas acima da rota coringa "*" */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </SiteProvider>
+    </Router>
+    </MotionConfig>
   </HelmetProvider>
 );
 

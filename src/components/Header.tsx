@@ -1,251 +1,209 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Menu, X } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { useActiveSection, useScrolled } from "@/hooks/useScrollProgress";
-import logoHeader from "@/assets/logo-header.png";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Menu, X, Phone, Mail } from "lucide-react";
+import logo from "@/assets/web/logo-header-trim.png";
+import { FIRM, NAV, RAIL } from "@/content/site";
+import { useSite } from "@/providers/SiteProvider";
+import { EASE_GLASS, useActiveSection } from "@/lib/motion";
+import Magnetic from "@/components/fx/Magnetic";
 
-const navLinks = [
-  { label: "Início", id: "inicio" },
-  { label: "Áreas de Atuação", id: "areas" },
-  { label: "Sócios", id: "socios" },
-  { label: "Quem Somos", id: "quem-somos" },
-  { label: "Contato", id: "contato" },
-];
+const SPY_IDS = RAIL.map((r) => r.id);
 
-const sectionIds = navLinks.map((link) => link.id);
+/** Mapeia a seção visível para o item de menu correspondente */
+const NAV_OF: Record<string, string> = {
+  inicio: "inicio",
+  performance: "inicio",
+  areas: "areas",
+  socios: "socios",
+  reconhecimento: "socios",
+  sobre: "sobre",
+  principios: "sobre",
+  "rf-group": "sobre",
+  contato: "contato",
+};
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const isScrolled = useScrolled(24);
-  const activeSection = useActiveSection(useMemo(() => sectionIds, []));
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { scrollTo, introDone, setTopic, lockScroll } = useSite();
+  const active = useActiveSection(SPY_IDS);
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  const isHome = location.pathname === "/";
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    setCompact(y > 60);
+    setHidden(y > 640 && y > prev + 4 && !open);
+    if (y < prev - 4) setHidden(false);
+  });
 
   useEffect(() => {
-    if (!isMobileMenuOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [isMobileMenuOpen]);
+    lockScroll("menu", open);
+  }, [open, lockScroll]);
 
-  const goToSection = useCallback(
-    (id: string) => {
-      setIsMobileMenuOpen(false);
-      if (!isHome) {
-        navigate("/#" + id);
-        return;
-      }
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    },
-    [isHome, navigate],
-  );
+  const go = (id: string) => {
+    setOpen(false);
+    window.setTimeout(() => scrollTo(id), open ? 380 : 0);
+  };
+
+  const careers = () => {
+    setTopic("trabalhe-conosco");
+    go("contato");
+  };
+
+  const navActive = NAV_OF[active] ?? "inicio";
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
-      {/* Mobile sheet is rendered first and sits below the bar, so the bar —
-          logo and close button included — stays visible while the menu is open. */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="pointer-events-auto fixed inset-0 z-0 bg-neutral-950 lg:hidden"
-          >
-            <div className="flex h-full flex-col px-6 pb-10 pt-28">
-              <nav className="flex flex-1 flex-col justify-center">
-                {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.id}
-                    href={`#${link.id}`}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 + index * 0.05, duration: 0.35, ease: "easeOut" }}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      goToSection(link.id);
-                    }}
-                    className="group flex items-center justify-between border-b border-white/10 py-5 text-2xl font-light tracking-tight text-white/90 transition-colors duration-300 active:text-white"
-                  >
-                    {link.label}
-                    <ArrowUpRight className="h-5 w-5 text-white/30 transition-transform duration-300 group-active:translate-x-1" />
-                  </motion.a>
-                ))}
-              </nav>
-
-              <motion.a
-                href="#contato"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + navLinks.length * 0.05, duration: 0.35 }}
-                onClick={(event) => {
-                  event.preventDefault();
-                  goToSection("contato");
-                }}
-                className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-brand-light to-brand px-6 py-4 text-base font-semibold text-white"
-              >
-                Trabalhe Conosco
-                <ArrowUpRight className="h-5 w-5" />
-              </motion.a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div
-        className={cn(
-          "relative z-10 px-4 transition-[padding] duration-500 ease-out md:px-6 lg:px-10",
-          isScrolled ? "pt-2 md:pt-3" : "pt-4 md:pt-6",
-        )}
+    <>
+      <motion.header
+        className="fixed inset-x-0 top-0 z-[120]"
+        initial={{ y: -120, opacity: 0 }}
+        animate={introDone ? { y: hidden ? -120 : 0, opacity: 1 } : { y: -120, opacity: 0 }}
+        transition={{ duration: 0.9, ease: EASE_GLASS, delay: introDone && !compact ? 0.5 : 0 }}
       >
-        <nav
-          className={cn(
-            "pointer-events-auto mx-auto flex max-w-[1440px] items-center justify-between gap-4",
-            "rounded-full border px-3 py-2 md:px-4 md:py-2.5",
-            "transition-[background-color,border-color,box-shadow] duration-500 ease-out",
-            isMobileMenuOpen
-              ? "border-transparent bg-transparent shadow-none"
-              : isScrolled
-                ? "border-black/[0.06] bg-white/85 shadow-[0_10px_40px_-16px_rgba(15,12,14,0.35)] supports-[backdrop-filter]:bg-white/70 supports-[backdrop-filter]:backdrop-blur-xl"
-                : "border-white/20 bg-white/10 supports-[backdrop-filter]:backdrop-blur-md",
-          )}
+        <div
+          className="shell flex items-center justify-between gap-6 transition-[padding] duration-500"
+          style={{ paddingTop: compact ? 14 : 26, paddingBottom: 14 }}
         >
-          {/* Logo */}
           <a
             href="#inicio"
-            onClick={(event) => {
-              event.preventDefault();
-              goToSection("inicio");
+            onClick={(e) => {
+              e.preventDefault();
+              go("inicio");
             }}
-            className="flex shrink-0 items-center rounded-full pl-1 pr-2 outline-none transition-opacity duration-300 hover:opacity-70 focus-visible:ring-2 focus-visible:ring-brand/50"
-            aria-label="Rfeitosa Advogados Associados — ir para o início"
+            className="relative z-10 shrink-0"
+            aria-label="Rfeitosa Advogados Associados — voltar ao início"
           >
             <img
-              src={logoHeader}
+              src={logo}
               alt="Rfeitosa Advogados Associados"
-              width={220}
-              height={56}
-              className={cn(
-                "w-auto transition-[height] duration-500 ease-out",
-                isScrolled ? "h-8 md:h-10" : "h-9 drop-shadow-[0_1px_10px_rgba(0,0,0,0.35)] md:h-12",
-              )}
+              className={`w-auto transition-all duration-500 ${compact ? "h-8 md:h-10" : "h-9 md:h-12"}`}
             />
           </a>
 
-          {/* Desktop navigation */}
-          <ul className="hidden items-center gap-0.5 lg:flex">
-            {navLinks.map((link) => {
-              const isActive = isHome && activeSection === link.id;
-              return (
-                <li key={link.id}>
-                  <a
-                    href={`#${link.id}`}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      goToSection(link.id);
-                    }}
-                    aria-current={isActive ? "true" : undefined}
-                    className={cn(
-                      "relative flex items-center rounded-full px-3.5 py-2 text-[13px] font-medium tracking-tight",
-                      "outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-brand/50 xl:px-4 xl:text-sm",
-                      isScrolled
-                        ? isActive
-                          ? "text-brand"
-                          : "text-neutral-600 hover:text-brand"
-                        : isActive
-                          ? "text-white"
-                          : "text-white/70 hover:text-white",
-                    )}
-                  >
+          {/* Navegação central em pílula de vidro com indicador deslizante */}
+          <nav aria-label="Principal" className="glass absolute left-1/2 hidden -translate-x-1/2 rounded-full p-1.5 lg:block">
+            <ul className="relative z-10 flex items-center">
+              {NAV.map((item) => {
+                const isActive = navActive === item.id;
+                return (
+                  <li key={item.id} className="relative">
                     {isActive && (
                       <motion.span
-                        layoutId="nav-active-pill"
-                        transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.7 }}
-                        className={cn(
-                          "absolute inset-0 -z-10 rounded-full",
-                          isScrolled ? "bg-brand/[0.08]" : "bg-white/15",
-                        )}
+                        layoutId="nav-pill"
+                        className="absolute inset-0 rounded-full bg-white"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       />
                     )}
-                    <span className="relative">{link.label}</span>
-                  </a>
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        go(item.id);
+                      }}
+                      aria-current={isActive ? "true" : undefined}
+                      className={`relative block rounded-full px-[18px] py-2.5 text-[14px] font-normal transition-colors duration-300 ${
+                        isActive ? "text-[#800020]" : "text-white/80 hover:text-white"
+                      }`}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <div className="relative z-10 flex items-center gap-3">
+            <Magnetic className="hidden lg:inline-flex">
+              <button type="button" onClick={careers} className="btn btn-glass glass h-11 px-5 text-[14px]">
+                <span className="relative z-10">Trabalhe conosco</span>
+              </button>
+            </Magnetic>
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="glass flex h-11 w-11 items-center justify-center rounded-full lg:hidden"
+              aria-label={open ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={open}
+              aria-controls="menu-mobile"
+            >
+              <span className="relative z-10">{open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</span>
+            </button>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* Menu mobile: vidro em tela cheia */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="menu-mobile"
+            className="fixed inset-0 z-[110] lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                background: "linear-gradient(160deg, rgba(86,16,16,.55), rgba(12,4,6,.82))",
+                WebkitBackdropFilter: "blur(28px) saturate(150%)",
+                backdropFilter: "blur(28px) saturate(150%)",
+              }}
+            />
+            <nav aria-label="Menu" className="relative flex h-full flex-col justify-between px-6 pb-10 pt-28">
+              <ul className="space-y-1">
+                {NAV.map((item, i) => (
+                  <li key={item.id} className="overflow-hidden">
+                    <motion.a
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        go(item.id);
+                      }}
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{ duration: 0.6, ease: EASE_GLASS, delay: 0.05 + i * 0.06 }}
+                      className={`display block py-1.5 text-[44px] ${navActive === item.id ? "text-white" : "text-white/55"}`}
+                    >
+                      {item.label}
+                    </motion.a>
+                  </li>
+                ))}
+                <li className="overflow-hidden">
+                  <motion.button
+                    type="button"
+                    onClick={careers}
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ duration: 0.6, ease: EASE_GLASS, delay: 0.05 + NAV.length * 0.06 }}
+                    className="display block py-1.5 text-left text-[44px] text-white/55"
+                  >
+                    Trabalhe conosco
+                  </motion.button>
                 </li>
-              );
-            })}
-          </ul>
-
-          {/* Desktop CTA */}
-          <a
-            href="#contato"
-            onClick={(event) => {
-              event.preventDefault();
-              goToSection("contato");
-            }}
-            className={cn(
-              "group hidden shrink-0 items-center gap-1.5 rounded-full py-2.5 pl-5 pr-4 lg:inline-flex",
-              "text-[13px] font-semibold tracking-tight text-white xl:text-sm",
-              "bg-gradient-to-br from-brand-light to-brand",
-              "shadow-[0_8px_24px_-10px_hsl(var(--brand)/0.9)]",
-              "outline-none transition-[box-shadow,transform] duration-300",
-              "hover:shadow-[0_14px_32px_-10px_hsl(var(--brand)/0.95)] active:scale-[0.98]",
-              "focus-visible:ring-2 focus-visible:ring-white/70",
-            )}
-          >
-            Trabalhe Conosco
-            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </a>
-
-          {/* Mobile trigger */}
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen((open) => !open)}
-            aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
-            aria-expanded={isMobileMenuOpen}
-            className={cn(
-              "relative z-[60] flex h-10 w-10 shrink-0 items-center justify-center rounded-full lg:hidden",
-              "outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-brand/50",
-              isMobileMenuOpen
-                ? "bg-white/10 text-white"
-                : isScrolled
-                  ? "bg-brand/[0.08] text-brand"
-                  : "bg-white/15 text-white ring-1 ring-inset ring-white/25",
-            )}
-          >
-            <AnimatePresence initial={false} mode="wait">
-              {isMobileMenuOpen ? (
-                <motion.span
-                  key="close"
-                  initial={{ opacity: 0, rotate: -90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: 90 }}
-                  transition={{ duration: 0.18 }}
-                >
-                  <X className="h-5 w-5" />
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="open"
-                  initial={{ opacity: 0, rotate: 90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: -90 }}
-                  transition={{ duration: 0.18 }}
-                >
-                  <Menu className="h-5 w-5" />
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-        </nav>
-      </div>
-
-    </header>
+              </ul>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+                className="space-y-3 text-[15px] text-white/75"
+              >
+                <a href={FIRM.phoneHref} className="flex items-center gap-3">
+                  <Phone className="h-4 w-4" /> {FIRM.phone}
+                </a>
+                <a href={`mailto:${FIRM.email}`} className="flex items-center gap-3">
+                  <Mail className="h-4 w-4" /> {FIRM.email}
+                </a>
+              </motion.div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

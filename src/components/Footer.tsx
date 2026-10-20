@@ -1,96 +1,109 @@
-import { Linkedin, Instagram, Mail } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import rfLogoIcon from "@/assets/rf-logo-icon.png";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { ArrowUp, Instagram, Linkedin, Mail } from "lucide-react";
+import logo from "@/assets/web/logo-header-trim.png";
+import { FIRM, NAV, UNITS } from "@/content/site";
+import Magnetic from "@/components/fx/Magnetic";
+import { useSite } from "@/providers/SiteProvider";
 
-const socialLinks = [{
-  icon: Linkedin,
-  href: "https://br.linkedin.com/company/roneelyfeitosaadvogados",
-  label: "LinkedIn"
-}, {
-  icon: Instagram,
-  href: "https://www.instagram.com/rfeitosadvogados?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-  label: "Instagram"
-}, {
-  icon: Mail,
-  href: "mailto:contato@rfeitosa.com.br",
-  label: "Email"
-}];
-
-const branches = [
-  { name: "Sobral (Sede)", phone: "(88) 9 8844-1638", address: "Rua Rita Marina Morais de Aquino, N35" },
-  { name: "Jijoca de Jericoacoara", phone: "(88) 9.9791-3345", address: "Sala 3, 1º andar, Rua 17 de Outubro, 1340, Centro" },
-  { name: "Tianguá", phone: "(88) 9.9325-4995", address: "Rua Maestro Quincas Bezerril, 803" },
-  { name: "Camocim", phone: "(88) 9.9977-1775", address: "Praça da Rodoviária" },
-];
-
+/** Rodapé. Na home rola até a seção; em outras páginas o link segue para /#secao. */
 export default function Footer() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
+  const logoY = useTransform(scrollYProgress, [0, 1], ["40%", "0%"]);
 
-  const scrollToSection = (href: string) => {
-    if (location.pathname !== "/") {
-      navigate("/" + href);
-    } else {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth"
-        });
-      }
-    }
+  const { scrollTo } = useSite();
+  const go = (e: React.MouseEvent, id: string) => {
+    if (!document.getElementById(id)) return; // fora da home: deixa o link seguir para /#id
+    e.preventDefault();
+    scrollTo(id);
   };
 
-  return <footer className="bg-background border-t border-border/30">
-      {/* Main Footer */}
-      <div className="section-container py-12 md:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 md:gap-10">
-          {/* Brand */}
-          <div className="sm:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden">
-                <img src={rfLogoIcon} alt="RF Logo" className="w-10 h-10 object-contain" />
-              </div>
-              <div>
-                <h4 className="font-display text-xl font-semibold text-foreground">Rfeitosa</h4>
-                <p className="text-xs text-muted-foreground tracking-wider uppercase">
-                  Advogados Associados
+  const social = [
+    { href: FIRM.linkedin, label: "LinkedIn", icon: Linkedin },
+    { href: FIRM.instagram, label: "Instagram", icon: Instagram },
+    { href: `mailto:${FIRM.email}`, label: "E-mail", icon: Mail },
+  ];
+
+  return (
+    <footer ref={ref} className="relative overflow-hidden border-t border-white/10 pt-20" aria-label="Rodapé">
+      <div aria-hidden className="pointer-events-none absolute bottom-[-30%] left-1/2 h-[600px] w-[1100px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(128,0,32,.4),transparent)]" />
+
+      <div className="shell relative">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <p className="display max-w-[16ch] text-[2.2rem] font-light leading-[1.05]">
+              Excelência jurídica e compromisso com resultados.
+            </p>
+            <p className="mt-4 max-w-[36ch] text-[15px] text-white/55">Sua confiança é nossa maior responsabilidade.</p>
+            <div className="mt-8 flex gap-2.5">
+              {social.map((s) => (
+                <Magnetic key={s.label}>
+                  <a
+                    href={s.href}
+                    target={s.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="glass flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-white/10"
+                  >
+                    <s.icon className="relative z-10 h-[18px] w-[18px]" />
+                  </a>
+                </Magnetic>
+              ))}
+            </div>
+          </div>
+
+          <nav aria-label="Rodapé" className="lg:col-span-2">
+            <ul className="space-y-2.5 text-[15px] text-white/70">
+              {NAV.map((n) => (
+                <li key={n.id}>
+                  <a href={`/#${n.id}`} onClick={(e) => go(e, n.id)} className="hover:text-white">
+                    {n.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-6 lg:grid-cols-4">
+            {UNITS.map((u) => (
+              <address key={u.id} className="not-italic">
+                <p className="text-[15px] text-white">
+                  {u.city}
+                  {u.tag && <span className="text-white/45"> ({u.tag.toLowerCase()})</span>}
                 </p>
-              </div>
-            </div>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Excelência jurídica e compromisso com resultados. 
-              Sua confiança é nossa maior responsabilidade.
-            </p>
-            <div className="flex gap-3">
-              {socialLinks.map(link => <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl glass-button flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300" aria-label={link.label}>
-                  <link.icon className="w-5 h-5" />
-                </a>)}
-            </div>
-          </div>
-
-          {/* Branch columns */}
-          {branches.map((branch) => (
-            <div key={branch.name}>
-              <h5 className="font-semibold text-sm md:text-base mb-3 md:mb-4 text-foreground">{branch.name}</h5>
-              <ul className="space-y-2 text-xs md:text-sm text-muted-foreground">
-                <li>{branch.phone}</li>
-                <li>{branch.address}</li>
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-border/30">
-        <div className="section-container py-6">
-          <div className="flex justify-center items-center text-xs md:text-sm text-muted-foreground text-center">
-            <p>
-              © {new Date().getFullYear()} Rfeitosa Advogados Associados. 
-              Todos os direitos reservados.
-            </p>
+                <a href={`tel:${u.tel}`} className="mt-2 block text-[14px] text-white/70 hover:text-white">
+                  {u.phone}
+                </a>
+                <p className="mt-1 text-[13px] leading-relaxed text-white/50">{u.address}</p>
+              </address>
+            ))}
           </div>
         </div>
+
+        <div className="relative mt-20 overflow-hidden">
+          <motion.img
+            src={logo}
+            alt="Rfeitosa Advogados Associados"
+            className="mx-auto w-full max-w-[880px] opacity-90"
+            style={{ y: logoY }}
+            loading="lazy"
+          />
+        </div>
+
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-8 pb-24 text-[13px] text-white/45 md:flex-row md:pb-8 md:pr-24">
+          <p>© {new Date().getFullYear()} Rfeitosa Advogados Associados. Todos os direitos reservados.</p>
+          <Magnetic>
+            <a
+              href="#inicio"
+              onClick={(e) => go(e, "inicio")}
+              className="flex items-center gap-2 rounded-full px-4 py-2 text-white/70 ring-1 ring-white/15 hover:text-white hover:ring-white/40"
+            >
+              <ArrowUp className="h-4 w-4" /> Voltar ao topo
+            </a>
+          </Magnetic>
+        </div>
       </div>
-    </footer>;
+    </footer>
+  );
 }
